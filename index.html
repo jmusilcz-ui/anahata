@@ -215,7 +215,7 @@ const matShellG = matShell.clone(); const matRibG = matRib.clone(); const matPol
 const gRoof=new THREE.Group(), gUF=new THREE.Group(), gPartsGF=new THREE.Group(),
       gPartsUF=new THREE.Group(), gLabels=new THREE.Group(), gLabelsUF=new THREE.Group(), gSite=new THREE.Group();
 // Villa Anahata natočená dle geodetického fitu masterplan↔UTM (sever = -Z světa)
-const gAna=new THREE.Group(); gAna.rotation.y=0.267; scene.add(gAna);
+const gAna=new THREE.Group(); gAna.rotation.y=0.330; scene.add(gAna);
 gAna.add(gRoof,gUF,gPartsGF,gPartsUF,gLabels); gUF.add(gPartsUF,gLabelsUF);
 scene.add(gSite);                                        // okolí ve světových souřadnicích
 const gWorld=new THREE.Group(); scene.add(gWorld);       // areál (sever = -Z)
@@ -415,167 +415,150 @@ const matLam=M({map:lamTex,roughness:.9,side:THREE.DoubleSide});
   fr.castShadow=true; gRoof.add(fr);
 })();
 
-// ---------- přízemí ----------
+// ---------- PŘÍZEMÍ ±0,00 (dle půdorysu 1st floor: 20,000 × 10,000; osy 5,000|1,875|6,250|1,875|5,000) ----------
 const GF=stadium(5,5);
-flatShapeMesh(stadiumShape(5,5),matFloor,0.03); // podlaha
-(function gfWalls(){
-  const N=170, ds=GF.total/N;
+flatShapeMesh(stadiumShape(5,5),matFloor,0.03);
+(function gfEnvelope(){
+  const N=220, ds=GF.total/N;
   function cls(p){
-    if(p.z>4.2 && Math.abs(p.x)<=5.6) return 'open';
-    if(Math.abs(p.x)>=8.0 && p.z>=-2.0) return 'glass';
-    if(p.z<=-4.2){ const ax=Math.abs(p.x); if(ax<=1.2||(ax>=4.8&&ax<=6.3)) return 'glass'; }
+    if(p.z>4.35 && Math.abs(p.x)<5.25) return 'open';        // obývací prostor otevřený na terasu
+    if(Math.abs(p.x)>8.15) return 'glass';                   // prosklené konce ložnic 1 a 2
+    if(p.z<-4.35 && Math.abs(p.x)<1.95) return 'glass';      // zahrada – severní prosklení
+    if(p.z<-4.35 && Math.abs(p.x)>4.6 && Math.abs(p.x)<6.6) return 'glass'; // okna koupelen
     return 'wall';
   }
   for(let i=0;i<N;i++){
-    const p1=GF.pt(i*ds), p2=GF.pt((i+1)*ds), mid=GF.pt((i+0.5)*ds), c=cls(mid);
-    if(c==='open'){ // jižní fasáda obýváku: celoprosklená stěna (viz řez B-B), sloupy stojí před ní
-      const g=wallSeg(p1.x,p1.z,p2.x,p2.z,2.95,1.6,0.05,matGlass); g.castShadow=false;
-      continue;
-    }
+    const p1=GF.pt(i*ds), p2=GF.pt((i+1)*ds), m=GF.pt((i+0.5)*ds), c=cls(m);
+    if(c==='open') continue;
     if(c==='glass'){
-      const g=wallSeg(p1.x,p1.z,p2.x,p2.z,2.95,1.625,0.06,matGlass); g.castShadow=false;
-      wallSeg(p1.x,p1.z,p2.x,p2.z,0.4,3.3,0.2,matWall);
-      wallSeg(p1.x,p1.z,p2.x,p2.z,0.16,0.08,0.2,matWall);
-    } else wallSeg(p1.x,p1.z,p2.x,p2.z,3.5,1.75,0.22,matWall);
+      const g=wallSeg(p1.x,p1.z,p2.x,p2.z,2.55,1.55,0.06,matGlass); g.castShadow=false;
+      wallSeg(p1.x,p1.z,p2.x,p2.z,0.55,3.12,0.22,matWall);
+      wallSeg(p1.x,p1.z,p2.x,p2.z,0.16,0.09,0.22,matWall);
+    } else wallSeg(p1.x,p1.z,p2.x,p2.z,3.4,1.7,0.22,matWall);
   }
 })();
 (function gfPartitions(){
-  const W=(a,b,c,d)=>wallSeg(a,b,c,d,3,1.5,0.13,matWall,gPartsGF);
-  // severní trakt: koupelny / WC / zahrada / sklad
-  W(-8.4,-2.5,-6.2,-2.5); W(-5.4,-2.5,-3.9,-2.5); W(-3.2,-2.5,-2.5,-2.5);
-  W( 8.4,-2.5, 6.2,-2.5); W( 5.4,-2.5, 2.5,-2.5);
-  W(-4.6,-4.9,-4.6,-2.5); W(-2.5,-4.9,-2.5,-2.5);
-  W( 4.6,-4.9, 4.6,-2.5); W( 2.5,-4.9, 2.5,-2.5);
-  // ložnice | schodišťové pásy
-  W(-5,-2.5,-5,1.4); W(-5,2.2,-5,2.45);
-  W( 5,-2.5, 5,1.4); W( 5,2.2, 5,2.45);
-  // kuchyňský blok
-  W(-3.125,-2.5,-3.125,1.0); W(3.125,-2.5,3.125,-1.2);
-  W(3.125,-1.2,4.9,-1.2); // sklad
+  const W=(a,b,c,d)=>wallSeg(a,b,c,d,3.0,1.5,0.15,matWall,gPartsGF);
+  const GL=(a,b,c,d)=>{const g=wallSeg(a,b,c,d,2.5,1.4,0.06,matGlass,gPartsGF); g.castShadow=false;
+                       wallSeg(a,b,c,d,0.4,2.85,0.12,matWall,gPartsGF);};
+  for(const s of [-1,1]){
+    W(s*8.7,-2.40, s*3.40,-2.40);      // jižní stěna koupelny 1/2
+    W(s*3.40,-5.00, s*3.40, 2.60);     // podélná stěna u kuchyně
+    W(s*1.95,-5.00, s*1.95,-3.30);     // stěna zahrady
+    W(s*3.40,-3.30, s*1.95,-3.30);     // WC / sklad – jižní stěna
+    W(s*8.7, 2.60, s*7.75, 2.60);      // jižní stěna ložnice (plná část)
+    GL(s*7.75,2.60, s*3.40,2.60);      // posuvné prosklení ložnice 4,3 m
+    W(s*3.40,-1.20, s*5.05,-1.20);     // sklad / šatna u kuchyně
+  }
 })();
-// točitá schodiště kolem kuchyně
-(function stairs(){
-  for(const sgn of [-1,1]){
-    const cx=0, cz=-0.5, r=4.0, steps=22, pts=[];
-    for(let i=0;i<steps;i++){
-      const f=(35+i/(steps-1)*110)*Math.PI/180;
-      const x=cx+sgn*(-r*Math.sin(f)), z=cz+r*Math.cos(f);
-      box(1.3,0.07,0.34,matStep,x,0.06+i*0.159,z,(sgn>0?Math.PI-f:f),gPartsGF);
-      if(i%2===0) pts.push(new THREE.Vector3(cx+sgn*(-(r+0.62)*Math.sin(f)),1.05+i*0.159,cz+(r+0.62)*Math.cos(f)));
+(function gfStairs(){   // dvě zaoblená schodiště po stranách kuchyně, ±0,00 → +3,50
+  for(const s of [-1,1]){
+    const C={x:0,z:-0.9}, R=2.05, n=22;
+    const pts=[];
+    for(let i=0;i<n;i++){
+      const th=(272-i*(272-176)/(n-1))*D2R;
+      const x=C.x+s*R*Math.sin(th), z=C.z+R*Math.cos(th);
+      box(1.25,0.07,0.33,matStep,x,0.07+i*0.159,z,-s*th,gPartsGF);
+      if(i%2===0) pts.push(new THREE.Vector3(C.x+s*(R+0.68)*Math.sin(th),1.05+i*0.159,C.z+(R+0.68)*Math.cos(th)));
     }
     const rail=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),30,0.035,6),matPole);
     rail.castShadow=true; gPartsGF.add(rail);
   }
 })();
-// kuchyňský ostrov, postele, nábytek (měřítko)
-(function furnitureGF(){
-  const isl=new THREE.Mesh(new THREE.CylinderGeometry(1,1,0.9,28),matWood);
-  isl.scale.set(1.15,1,0.8); isl.position.set(0,0.45,-0.5); isl.castShadow=true; gPartsGF.add(isl);
-  const top=new THREE.Mesh(new THREE.CylinderGeometry(1.06,1.06,0.05,28),matBed);
-  top.scale.set(1.15,1,0.8); top.position.set(0,0.93,-0.5); gPartsGF.add(top);
-  for(const sx of [-1,1]){
-    box(2,0.45,2,matBed,sx*7.3,0.225,0.1,0,gPartsGF);
-    box(1.9,0.16,1.9,new THREE.MeshStandardMaterial({color:0xfaf7ef}),sx*7.3,0.53,0.1,0,gPartsGF);
+(function gfFurniture(){
+  const isl=new THREE.Mesh(new THREE.CylinderGeometry(1,1,0.88,30),matWood);
+  isl.scale.set(1.35,1,0.9); isl.position.set(0,0.44,-1.35); isl.castShadow=true; gPartsGF.add(isl);
+  const top=new THREE.Mesh(new THREE.CylinderGeometry(1.06,1.06,0.05,30),matBed);
+  top.scale.set(1.35,1,0.9); top.position.set(0,0.91,-1.35); gPartsGF.add(top);
+  for(const s of [-1,1]){                                   // postele 200×200 v ložnicích 1 a 2
+    box(2,0.45,2,matBed,s*6.4,0.225,-0.5,0,gPartsGF);
+    box(1.9,0.16,1.9,new THREE.MeshStandardMaterial({color:0xfaf7ef}),s*6.4,0.53,-0.5,0,gPartsGF);
+    box(0.5,0.55,0.45,matWood,s*8.05,0.28,-1.75,0,gPartsGF); // noční stolek
+    box(2.6,0.5,0.55,matWood,s*6.4,0.25,1.9,0,gPartsGF);     // komoda
   }
-  box(3.2,0.65,0.95,matBed,0,0.33,3.4,0,gPartsGF);          // sofa
+  box(3.4,0.62,0.95,matBed,0,0.31,3.5,0,gPartsGF);           // sedačka v obýváku
   const din=new THREE.Mesh(new THREE.CylinderGeometry(0.85,0.85,0.74,20),matWood);
-  din.position.set(2.6,0.37,2.3); din.castShadow=true; gPartsGF.add(din);
-  // zahrada (vnitřní zeleň)
-  for(const [px,pz,r] of [[-0.9,-3.9,0.62],[0.7,-4.0,0.5],[-0.1,-3.4,0.42]]){
+  din.position.set(2.5,0.37,2.6); din.castShadow=true; gPartsGF.add(din);
+  for(const [px,pz,r] of [[-0.9,-4.3,0.6],[0.7,-4.35,0.48],[-0.05,-3.8,0.4]]){  // vnitřní zahrada
     const b=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),matGreen);
     b.position.set(px,r+0.05,pz); b.castShadow=true; gPartsGF.add(b);
   }
 })();
-// bambusové svazky sloupů (jižní otevřená strana + kraje void)
+// bambusové svazky sloupů podél jižní otevřené strany (dle půdorysu i pohledu A)
 function bundle(x,z,h,parent,pm){
   const g=new THREE.Group(); const mat=pm||matPole;
   for(let k=0;k<5;k++){
-    const a=k/5*Math.PI*2, bx=x+0.12*Math.cos(a), bz=z+0.12*Math.sin(a),
-          tx=x+0.45*Math.cos(a), tz=z+0.45*Math.sin(a);
-    const v0=new THREE.Vector3(bx,0,bz), v1=new THREE.Vector3(tx,h,tz);
+    const a=k/5*Math.PI*2, v0=new THREE.Vector3(x+0.12*Math.cos(a),0,z+0.12*Math.sin(a)),
+          v1=new THREE.Vector3(x+0.45*Math.cos(a),h,z+0.45*Math.sin(a));
     const dir=v1.clone().sub(v0), len=dir.length();
     const cyl=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.075,1,8),mat);
-    cyl.scale.y=len;
-    cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
-    cyl.position.copy(v0).add(v1).multiplyScalar(0.5);
-    cyl.castShadow=true; g.add(cyl);
+    cyl.scale.y=len; cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
+    cyl.position.copy(v0).add(v1).multiplyScalar(0.5); cyl.castShadow=true; g.add(cyl);
   }
-  (parent||scene).add(g); return g;
+  (parent||gAna).add(g); return g;
 }
 for(const bx of [-8,-4,0,4,8]){
-  const bz=(Math.abs(bx)<=5?5:Math.sqrt(25-Math.pow(Math.abs(bx)-5,2)))-0.55;
+  const bz=(Math.abs(bx)<=5?5:Math.sqrt(Math.max(0,25-Math.pow(Math.abs(bx)-5,2))))-0.5;
   bundle(bx,bz,Math.min(shellY(bx,bz)-0.25,8.6));
 }
-bundle(-3.7,4.35,Math.min(shellY(-3.7,4.35)-0.25,8.8)); bundle(3.7,4.35,Math.min(shellY(3.7,4.35)-0.25,8.8));
+bundle(-3.7,4.4,Math.min(shellY(-3.7,4.4)-0.25,8.8)); bundle(3.7,4.4,Math.min(shellY(3.7,4.4)-0.25,8.8));
 
-// ---------- 2. NP (menší deska, šikmé prosklené stěny ložnic, lamelový pás 3,6–4,6) ----------
+// ---------- 2. NP +3,50 (dle půdorysu 2nd floor: sever z=-4,0 / jih z=+6,0, konce x=±7,95) ----------
 (function upperFloor(){
-  function plateShape(inset){
-    const s=new THREE.Shape(), i=inset||0;
-    s.moveTo(-6.55,-4+i);
-    s.lineTo(6.55,-4+i);
-    s.absarc(6.55,-0.5,3.5-i,-Math.PI/2,0.87,false);
-    s.lineTo(3.45-i*1.5,4.65-i);
-    s.lineTo(-3.45+i*1.5,4.65-i);
-    s.lineTo(-8.8+i,2.18);
-    s.absarc(-6.55,-0.5,3.5-i,Math.PI-0.87,Math.PI*1.5,false);
+  function plate(i){
+    const s=new THREE.Shape(), k=i||0;
+    s.moveTo(-5.6+k*0.6,-4.0+k);
+    s.lineTo(5.6-k*0.6,-4.0+k);
+    s.quadraticCurveTo(7.95-k,-4.0+k, 7.95-k,-1.2);
+    s.quadraticCurveTo(7.95-k, 1.7, 6.5-k*0.8, 2.95-k*0.4);
+    s.lineTo(3.4-k*0.5, 6.0-k);
+    s.lineTo(-3.4+k*0.5, 6.0-k);
+    s.lineTo(-6.5+k*0.8, 2.95-k*0.4);
+    s.quadraticCurveTo(-7.95+k, 1.7, -7.95+k,-1.2);
+    s.quadraticCurveTo(-7.95+k,-4.0+k, -5.6+k*0.6,-4.0+k);
     return s;
   }
-  const sh=plateShape(0); // plné plato — žádná galerie, jen schodišťové otvory
+  const sh=plate(0);                                  // plné plato, jen otvory schodišť
   sh.holes.push((()=>{const p=new THREE.Path();
-    p.moveTo(-4.1,-3.9); p.lineTo(-2.1,-3.9); p.lineTo(-2.1,-1.0); p.lineTo(-4.1,-1.0); return p;})());
+    p.moveTo(-2.25,-3.95); p.lineTo(-0.15,-3.95); p.lineTo(-0.15,-1.25); p.lineTo(-2.25,-1.25); return p;})());
   sh.holes.push((()=>{const p=new THREE.Path();
-    p.moveTo(2.1,-3.9); p.lineTo(4.1,-3.9); p.lineTo(4.1,-1.0); p.lineTo(2.1,-1.0); return p;})());
-  const g=new THREE.ExtrudeGeometry(sh,{depth:0.5,bevelEnabled:false,curveSegments:36});
-  g.rotateX(Math.PI/2);
+    p.moveTo(0.15,-3.95); p.lineTo(2.25,-3.95); p.lineTo(2.25,-1.25); p.lineTo(0.15,-1.25); return p;})());
+  const g=new THREE.ExtrudeGeometry(sh,{depth:0.5,bevelEnabled:false,curveSegments:32}); g.rotateX(Math.PI/2);
   const slab=new THREE.Mesh(g,matSlab); slab.position.y=3.5;
   slab.castShadow=true; slab.receiveShadow=true; gUF.add(slab);
 
-  // lamelový pás 3,6–4,6 po celém obvodu + kolem ochozu (viditelný v pohledech jako 1m pruh)
-  const bpts=plateShape(0.12).getPoints(150);
-  const slatGeo=new THREE.BoxGeometry(0.05,0.92,0.05), dummy=new THREE.Object3D(), smats=[];
-  function bandAlong(pts,closed){
-    const n=pts.length;
-    for(let i=0;i<(closed?n:n-1);i++){
-      const p1=pts[i], p2=pts[(i+1)%n];
-      const len=Math.hypot(p2.x-p1.x,p2.y-p1.y), m=Math.max(1,Math.round(len/0.14));
-      for(let k=0;k<m;k++){
-        dummy.position.set(p1.x+(p2.x-p1.x)*k/m,4.08,p1.y+(p2.y-p1.y)*k/m);
-        dummy.updateMatrix(); smats.push(dummy.matrix.clone());
-      }
-    }
+  const pts=plate(0.12).getPoints(140);
+  // lamelový pás 3,60–4,60 po celém obvodu (viditelný ve všech pohledech)
+  const slat=new THREE.BoxGeometry(0.05,0.92,0.05), dm=new THREE.Object3D(), mats=[];
+  for(let i=0;i<pts.length;i++){
+    const p1=pts[i], p2=pts[(i+1)%pts.length];
+    const len=Math.hypot(p2.x-p1.x,p2.y-p1.y), m=Math.max(1,Math.round(len/0.14));
+    for(let k=0;k<m;k++){ dm.position.set(p1.x+(p2.x-p1.x)*k/m,4.08,p1.y+(p2.y-p1.y)*k/m);
+      dm.updateMatrix(); mats.push(dm.matrix.clone()); }
+    wallSeg(p1.x,p1.y,p2.x,p2.y,0.09,4.60,0.07,matPole,gUF);
+    wallSeg(p1.x,p1.y,p2.x,p2.y,0.10,3.58,0.07,matPole,gUF);
   }
-  bandAlong(bpts,true);
-  const im=new THREE.InstancedMesh(slatGeo,matPole,smats.length);
-  smats.forEach((m,i)=>im.setMatrixAt(i,m)); im.castShadow=true; gUF.add(im);
-  function railAlong(pts,closed,y,t){
-    const n=pts.length;
-    for(let i=0;i<(closed?n:n-1);i++){
-      const p1=pts[i], p2=pts[(i+1)%n];
-      wallSeg(p1.x,p1.y,p2.x,p2.y,t,y,0.07,matPole,gUF);
-    }
+  const im=new THREE.InstancedMesh(slat,matPole,mats.length);
+  mats.forEach((m,i)=>im.setMatrixAt(i,m)); im.castShadow=true; gUF.add(im);
+  // obvodové stěny nad pásem: sever zděný s okny koupelen, jih + konce prosklené
+  for(let i=0;i<pts.length;i++){
+    const p1=pts[i], p2=pts[(i+1)%pts.length], mx=(p1.x+p2.x)/2, mz=(p1.y+p2.y)/2;
+    let solid = (mz<-3.6) && !(Math.abs(mx)>3.6 && Math.abs(mx)<5.3);
+    if(solid) wallSeg(p1.x,p1.y,p2.x,p2.y,1.55,5.38,0.2,matWall,gUF);
+    else { const gl=wallSeg(p1.x,p1.y,p2.x,p2.y,1.5,5.35,0.06,matGlass,gUF); gl.castShadow=false;
+           wallSeg(p1.x,p1.y,p2.x,p2.y,0.12,6.16,0.16,matWall,gUF); }
   }
-  railAlong(bpts,true,4.6,0.09); railAlong(bpts,true,3.58,0.1);
-
-  // stěny 2. NP nad pásem: sever zděný s okny koupelen, jih a konce prosklené
-  const n=bpts.length;
-  for(let i=0;i<n;i++){
-    const p1=bpts[i], p2=bpts[(i+1)%n], mx=(p1.x+p2.x)/2, mz=(p1.y+p2.y)/2;
-    let type='glass';
-    if(mz<-3.75){ const ax=Math.abs(mx); type=(ax>3.1&&ax<4.75)?'glass':'wall'; }
-    if(type==='wall') wallSeg(p1.x,p1.y,p2.x,p2.y,1.45,5.35,0.2,matWall,gUF);
-    else { const gl=wallSeg(p1.x,p1.y,p2.x,p2.y,1.4,5.32,0.06,matGlass,gUF); gl.castShadow=false;
-           wallSeg(p1.x,p1.y,p2.x,p2.y,0.12,6.08,0.16,matWall,gUF); }
-  }
-  // příčky 2. NP: koupelny + šatny + jádro
-  const W=(a,b,c,d)=>wallSeg(a,b,c,d,2.5,4.75,0.13,matWall,gPartsUF);
-  W(-9.6,-0.9,-6.4,-0.9); W(-5.6,-0.9,-3.125,-0.9);
-  W( 9.6,-0.9, 6.4,-0.9); W( 5.6,-0.9, 3.125,-0.9);
-  W(-3.125,-3.95,-3.125,-0.9); W(3.125,-3.95,3.125,-0.9);
-  W(-1.9,-3.95,-1.9,-2.6); W(1.9,-3.95,1.9,-2.6);
-  for(const sx of [-1,1]){
-    box(2,0.45,2,matBed,sx*6.3,3.97,0.6,0,gPartsUF);
-    box(1.9,0.16,1.9,new THREE.MeshStandardMaterial({color:0xfaf7ef}),sx*6.3,4.28,0.6,0,gPartsUF);
+  // příčky: koupelny 3/4, šatny 1/2, ložnice 3/4
+  const W=(a,b,c,d)=>wallSeg(a,b,c,d,2.5,4.75,0.14,matWall,gPartsUF);
+  for(const s of [-1,1]){
+    W(s*7.55,-0.35, s*1.65,-0.35);      // dělicí stěna sever/jih s dveřmi
+    W(s*3.125,-4.0, s*3.125,-0.35);     // koupelna 3/4  |  šatna 1/2
+    W(s*1.65,-4.0,  s*1.65, 1.75);      // šatna | schodiště | ložnice
+    W(s*1.65, 1.75, s*2.55, 1.75);      // zálom u ložnice
+    box(2,0.45,2,matBed,s*6.2,3.97,0.95,0,gPartsUF);
+    box(1.9,0.16,1.9,new THREE.MeshStandardMaterial({color:0xfaf7ef}),s*6.2,4.28,0.95,0,gPartsUF);
+    box(2.4,0.45,0.55,matWood,s*6.2,3.97,-1.35,0,gPartsUF);  // komoda v ložnici
+    box(1.5,0.5,0.7,matBed,s*5.9,3.95,-2.9,0,gPartsUF);      // vana v koupelně
   }
 })();
 
@@ -879,14 +862,13 @@ function label(txt,x,y,z,big,parent){
   const s=big?1.35:1; sp.scale.set(3.4*s,0.85*s,1); sp.position.set(x,y,z);
   (parent||gLabels).add(sp); return sp;
 }
-label('Ložnice 1',-7,1.9,0); label('Koupelna 1',-6.2,1.9,-3.7); label('WC',-3.3,1.9,-3.8);
-label('Zahrada',0,1.9,-3.9); label('Kuchyň',0,1.9,-0.5); label('Sklad',4,1.9,-1.9);
-label('Koupelna 2',6.2,1.9,-3.7); label('Ložnice 2',7,1.9,0); label('Obývací prostor',0,1.9,3.1);
+label('Ložnice 1',-6.4,1.9,0.4); label('Koupelna 1',-6.0,1.9,-3.7); label('WC',-2.7,1.9,-4.2);
+label('Zahrada',0,1.9,-4.3); label('Kuchyň',0,1.9,-1.4); label('Sklad',4.2,1.9,-1.8);
+label('Koupelna 2',6.0,1.9,-3.7); label('Ložnice 2',6.4,1.9,0.4); label('Obývací prostor',0,1.9,3.6);
 label('Terasa',0,1.2,8);
-label('Ložnice 3',-6.3,5.4,0.9,false,gLabelsUF); label('Koupelna 3',-6,5.4,-2.5,false,gLabelsUF);
-label('Šatna 1',-2.5,5.4,-2.3,false,gLabelsUF); label('Ložnice 4',6.3,5.4,0.9,false,gLabelsUF);
-label('Koupelna 4',6,5.4,-2.5,false,gLabelsUF); label('Šatna 2',2.5,5.4,-2.3,false,gLabelsUF);
-label('Terasa 2. NP',0,5.4,3.1,false,gLabelsUF);
+label('Ložnice 3',-5.9,5.4,2.0,false,gLabelsUF); label('Koupelna 3',-5.2,5.4,-2.3,false,gLabelsUF);
+label('Šatna 1',-2.4,5.4,-2.3,false,gLabelsUF); label('Ložnice 4',5.9,5.4,2.0,false,gLabelsUF);
+label('Koupelna 4',5.2,5.4,-2.3,false,gLabelsUF); label('Šatna 2',2.4,5.4,-2.3,false,gLabelsUF);
 // popisky areálu (světové souřadnice)
 label('Villa Anahata',0,10.4,0,true,gLabels2);
 label('Villa 1',20.4,2.4,18.6,true,gLabels2);
