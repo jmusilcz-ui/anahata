@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0;font-family:system-ui,sans-serif;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Anahata dotazník</title>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+/* Layout: one column, max 720px, section-by-section stepper, sticky progress bar on top */
+:root{
+  --bg:#f6f2ea; --paper:#fffdf9; --fg:#2d2a24; --muted:#7a7262; --line:#e2dbcc;
+  --accent:#4f7c5a; --accent-fg:#ffffff; --chip:#eef0e6; --chip-on:#4f7c5a; --warn:#a8552a;
+  --display:'Cormorant Garamond',Georgia,serif; --body:'Nunito Sans',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1d1b17; --paper:#262320; --fg:#ece6d9; --muted:#a79e8c; --line:#3a362f;
+  --accent:#8fbf96; --accent-fg:#14201a; --chip:#302d27; --chip-on:#8fbf96; --warn:#e3925f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1d1b17; --paper:#262320; --fg:#ece6d9; --muted:#a79e8c; --line:#3a362f;
+  --accent:#8fbf96; --accent-fg:#14201a; --chip:#302d27; --chip-on:#8fbf96; --warn:#e3925f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.5;margin:0;padding-block:0 40px;padding-inline:16px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;margin-inline:-16px;padding:12px 16px 8px;border-bottom:1px solid var(--line)}
+.top .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;max-width:720px;margin:0 auto}
+.top h1{font-family:var(--display);font-weight:600;font-size:26px;margin:0;letter-spacing:.02em}
+.top small{color:var(--muted);font-size:13px;white-space:nowrap}
+.bar{max-width:720px;margin:8px auto 0;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+main{max-width:720px;margin:0 auto}
+.intro{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:20px 0}
+.intro p{margin:0 0 10px}.intro p:last-child{margin:0}
+.who{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.who label{font-size:14px;color:var(--muted)}
+.chip{border:1.5px solid var(--line);background:var(--chip);color:var(--fg);border-radius:999px;padding:9px 16px;font:inherit;font-size:15px;cursor:pointer;text-align:left;line-height:1.3}
+.chip span{display:block}.chip small{display:block;font-size:12.5px;color:var(--muted);font-weight:400;line-height:1.25;margin-top:1px}.chip.on small{color:var(--accent-fg);opacity:.85}
+.chip.on{background:var(--chip-on);border-color:var(--chip-on);color:var(--accent-fg);font-weight:600}
+.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+section{margin:28px 0 8px}
+.sec{font-family:var(--display);font-size:24px;font-weight:600;margin:0;display:flex;gap:10px;align-items:baseline}
+.sec b{font-family:var(--body);font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:700}
+.sub{color:var(--muted);margin:4px 0 14px;font-size:15px}
+.q{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:0 0 12px}
+.q h3{margin:0 0 4px;font-size:17px;font-weight:700;text-wrap:balance}
+.q .hint{color:var(--muted);font-size:13px;margin:0 0 10px}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.links{font-size:14px;color:var(--muted);margin:0 0 10px;line-height:1.7}
+.links a{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.q textarea{width:100%;min-width:0;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit;font-size:15px;padding:10px 12px;min-height:44px;resize:vertical}
+.q textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+.foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:26px}
+.btn{font:inherit;font-weight:700;font-size:16px;border-radius:12px;padding:12px 20px;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-fg);cursor:pointer}
+a.btn{text-decoration:none;display:inline-block}
+.btn.ghost{background:transparent;color:var(--accent)}
+.status{font-size:14px;color:var(--muted);flex:1 1 100%}
+.status.warn{color:var(--warn)}
+.copybox{display:none;margin-top:12px;width:100%;min-height:160px;font-size:13px;font-family:ui-monospace,monospace;border:1.5px solid var(--line);border-radius:10px;padding:10px;background:var(--paper);color:var(--fg)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<div class="top"><div class="row"><h1>ANAHATA · dotazník k interiéru</h1><small id="count">0 / 40</small></div><div class="bar"><i id="barfill"></i></div></div>
+
+<main>
+<div class="intro">
+  <p>Lásko, tady je dotazník od Liny k interiéru, přeložený do češtiny 🙂 Lina má jen otevřené otázky – nabízené možnosti jsou moje zjednodušení, jen náměty k zaklikání, ne nic od Liny. Klidně klikej víc věcí najednou nebo napiš svoje. Nemusíš odpovídat na všechno.</p>
+  <p>Rozpracované se to ukládá v tvém tabletu, můžeš se k tomu vracet. Až budeš mít hotovo, dole klepni na <b>Hotovo – poslat Josefovi</b>, otevře se ti WhatsApp s hotovou zprávou a jen ji odešleš. muck 😘</p>
+  <div class="who"><label>Vyplňuje:</label><button class="chip on" data-who="lucie">Lucie</button><button class="chip" data-who="josef">Josef</button><button class="chip" data-who="spolecne">společně</button></div>
+</div>
+<div id="form"></div>
+<div class="foot">
+  <button class="btn" id="done">Hotovo – poslat Josefovi na WhatsApp</button>
+  <button class="btn ghost" id="copy">Zkopírovat text</button>
+  <div class="status" id="status">Načítám…</div>
+  <textarea class="copybox" id="copybox" readonly></textarea>
+</div>
+</main>
+
+<script>
+const S=[
+{t:"Život na Anahatě",sub:"Chceme navrhovat kolem vašeho skutečného života, ne podle showroomu.",q:[
+ {id:"q1",t:"Představ si běžný den na Anahatě za pět let. Jak začíná ráno, kde trávíte den a jak vypadá večer?",m:true,o:[["Ráno: pomalé ráno v ložnici","bez spěchu, snídaně později"],["Ráno: meditace / jóga v shale","ještě před horkem"],["Ráno: káva při východu slunce","horní terasa, východ nad mořem"],["Ráno: plavání před snídaní","bazén, pak snídaně venku"],["Den: práce z domova","pár hodin, klidný kout se stínem"],["Den: čtení a siesta","odpolední odpočinek v chladu"],["Den: výlety a moře","šnorchlování, loď, trh, hory"],["Den: přes poledne uvnitř","venku hlavně ráno a k večeru"],["Večer: západ slunce","na horní terase"],["Večer: grilování a večeře","často s přáteli nebo rodinou"],["Večer: v shale","cacao, karty, ztišení"],["Večer: klid, hudba, bazén","tlumené světlo, večerní koupání"]]},
+ {id:"q2",t:"Které prostory budete jako pár používat nejvíc? A kde má mít každý z vás možnost být sám?",m:true,o:[["Společně: dolní terasa","u bazénu"],["Společně: horní terasa","patro mezi ložnicemi"],["Společně: obývací prostor",""],["Společně: kuchyň a jídelna",""],["Sám/sama: ložnice nahoře",""],["Sám/sama: shala","meditace, klid"],["Sám/sama: pracovní kout",""],["Sám/sama: zahrada / u bazénu",""]]},
+ {id:"q3",t:"Jak často k vám budou jezdit děti, rodina nebo přátelé? Co jim má zpříjemnit pobyt, aniž by narušil vaše soukromí?",m:true,o:[["Návštěvy často","hlavně ze začátku"],["Návštěvy občas","pár týdnů v roce"],["Bazén",""],["Grilování a společné večeře","společné prostory jsou hlavní"],["Vlastní koupelna pro hosty",""],["Oddělené patro / křídlo pro hosty","aby měli své soukromí i my"],["Vila se bude část roku pronajímat","interiér musí fungovat i pro cizí hosty"]]},
+ {id:"q4",t:"Pracujete z domova, čtete, cvičíte jógu / meditujete, sportujete, tvoříte, pořádáte večeře? Co z toho potřebuje vlastní místo?",m:true,o:[["Práce z domova","stůl, klid, Wi-Fi"],["Čtení","čtecí kout ve stínu"],["Jóga / meditace","v samostatné shale"],["Cvičení","místo na podložku, činky"],["Tvoření / ateliér","malování, hudba, ruční práce"],["Večeře s hosty","velký stůl"],["Hudba / tanec","audio, volný prostor"]]},
+ {id:"q5",t:"Jak si představujete propojení vnitřku a venku přes den a večer – a jak řešit déšť, horko a hmyz?",m:true,o:[["Přízemí úplně otevřené na terasu","obývák a kuchyň splývají s dolní terasou"],["Sezení venku i za deště","hluboké přesahy střechy, rolety"],["Průvan a ventilátory místo klimatizace","ve společných prostorech, klima jen v ložnicích"],["Stínění západní strany","lamely nebo clony proti odpolednímu slunci"],["Hmyz: sítě v posuvných dveřích ložnic","zavřeno, ale větrá se"],["Hmyz: moskytiéra kolem postele","jako designový prvek"],["Hmyz: venku teplé žluté světlo","méně láká hmyz"],["Hmyz: řešit až podle potřeby",""]]}
+]},
+{t:"Pocit, identita, atmosféra",sub:"Kromě stylu nás zajímá, jak má dům emočně působit.",q:[
+ {id:"q6",t:"Vyber 5–7 slov, jak se má Anahata cítit, když vejdeš.",m:true,o:[["klidná a tichá","serene, calm"],["posvátná a duchovní","sacred, grounded"],["přirozená a živá","natural, organic"],["vzdušná a světlá","airy, light"],["teplá a útulná","warm, cosy"],["nenápadně luxusní","understated luxury"],["radostná a pohostinná","joyful, welcoming"],["harmonická","balanced"],["WOW","aby to vyrazilo dech"],["hravá",""],["elegantní",""],["surová a opravdová","raw, honest"]]},
+ {id:"q7",t:"Co pro tebe znamená „luxus“?",m:true,o:[["prostor","volnost, vzduch"],["řemeslo","ruční práce, detaily"],["jednoduchost","nic nepřebývá"],["komfort","všechno funguje a je pohodlné"],["technologie","chytrá domácnost"],["soukromí","nikdo nevidí dovnitř"],["materiály","poctivé přírodní materiály"],["servis / obsluha","personál, údržba"],["čas a klid",""]]},
+ {id:"q8",t:"Jak se Anahata NIKDY nemá cítit?",m:true,o:[["hotelově neosobně","jako řetězcový resort"],["kýčovitě „Bali suvenýr“","Buddhové všude, etno přeplácanost"],["temně a těžce","tmavé dřevo, málo světla"],["okázale a nabubřele","luxus na odiv, zlato, lesk"],["stroze a chladně","sterilní, galerie"],["přeplácaně","moc věcí"],["jako kancelář",""]]},
+ {id:"q9",t:"Spíš velmi klidný minimalistický interiér, nebo víc předmětů, umění, textur a osobnosti?",m:false,o:[["klidný minimalismus","málo věcí, čisté plochy"],["minimalismus + pár silných kusů","klidný základ, vybrané umění a předměty"],["vrstvený, sběratelský","víc textur, předmětů, příběhů"]]},
+ {id:"q10",t:"Jsou místa, hotely, domy nebo kultury, jejichž atmosféru by měla Anahata připomínat?",m:true,o:[["IBUKU / Green Village Bali","bambusové domy, organické tvary"],["Ulaman Eco Retreat","lotosové střechy, wellness, příroda"],["Amankila","klid, nenápadný luxus, východní Bali"],["Japonské wabi-sabi","jednoduchost, patina, ticho"],["Marocké riády","dvory, hliněné omítky, textil"],["Středomoří / Ibiza","bílá, kámen, lehkost"],["Skandinávská jednoduchost","světlé dřevo, čistota"]],
+  links:[["IBUKU / Green Village","https://greenvillagebali.com"],["Ulaman","https://www.ulamanbali.com"],["Amankila","https://www.aman.com/resorts/amankila"],["wabi-sabi (fotky)","https://www.pinterest.com/search/pins/?q=wabi%20sabi%20interior"],["riády (fotky)","https://www.pinterest.com/search/pins/?q=moroccan%20riad%20interior"],["Ibiza (fotky)","https://www.pinterest.com/search/pins/?q=ibiza%20finca%20interior"],["skandinávský styl (fotky)","https://www.pinterest.com/search/pins/?q=scandinavian%20minimal%20interior"]]}
+]},
+{t:"Prostor po prostoru",sub:"Funkce místností si potvrdíme před návrhem dispozic.",q:[
+ {id:"q11",t:"Obývací prostor: kolik lidí má pohodlně sedět a co je priorita?",m:true,o:[["4–6 lidí","pár a pár hostů"],["6–8 lidí","plně obsazená vila"],["10 a víc","večírky, větší návštěvy"],["konverzace","sezení tváří v tvář"],["lenošení","hluboké sedačky, daybedy"],["film / TV","projektor nebo televize"],["hudba a večírky","audio zóna, prostor pro hosty"]]},
+ {id:"q12",t:"Kuchyň: kdo vaří, jak často a co je důležité (spotřebiče, spíž, káva, víno, hosté)?",m:true,o:[["vaříme sami často","kuchyň jako srdce domu"],["vaříme sami občas","spíš snídaně, lehká jídla"],["kuchař / personál","zázemí pro personál"],["hosté při pronájmu","intuitivní a odolná"],["kávovar / kávový kout","kvalitní espresso"],["vinotéka","chlazení vína"],["velká spíž","zásoby, uzavřené úložné prostory"],["ostrůvek pro hosty","vaření a povídání, bar"],["humidor","na doutníky"]]},
+ {id:"q13",t:"Jídelna: pro kolik lidí má být stůl na větší večeře?",m:false,o:[["6–8","jeden stůl uvnitř"],["8–10","větší společné večeře"],["12 a víc","velké oslavy"],["večeře hlavně venku","velký stůl na terase, uvnitř menší"]]},
+ {id:"q14",t:"Hlavní ložnice: co ji dělá opravdu odpočinkovou? Postel, zatemnění, sezení, stůl, šatna, úložné prostory?",m:true,o:[["úplná tma (blackout)","zatemnění i prosklených stěn"],["sezení / čtecí kout","křeslo nebo daybed"],["psací stůl v ložnici",""],["pracovní místo mimo ložnici","oddělené / samostatné"],["velký šatník / dressing room","hodně úložného prostoru"],["výhled z postele","moře, zahrada"],["vlastní terasa",""]]},
+ {id:"q15",t:"Ložnice pro hosty / rodinu: mají být rovnocenné, nebo má některá jiný účel či charakter?",m:false,o:[["všechny rovnocenné","vhodné i pro pronájem"],["jedna hlavní + 3 hostovské","naše ložnice výrazně lepší"],["každá s jiným charakterem","např. Crescent, dětská…"]]},
+ {id:"q16",t:"Koupelny: sprcha vs. vana, dvojité umyvadlo, oddělené WC, úložné prostory, větrání, propojení ven, spa pocit – co je nejdůležitější?",m:true,o:[["velký sprchový kout","walk-in, dešťová sprcha"],["vana","aspoň v jedné koupelně"],["venkovní / spa pocit","otevřenost do přírody"],["venkovní sprcha u bazénu",""],["dvojité umyvadlo","pro páry"],["oddělené WC",""],["hodně úložného prostoru",""]]},
+ {id:"q17",t:"Terasy, bazén a venkovní prostory: jak chcete lenošit, jíst, bavit se a přecházet mezi vnitřkem a venkem?",m:true,o:[["lehátka u bazénu","sun loungers, stínění"],["venkovní jídelní stůl","večeře pod střechou"],["lounge / daybedy venku","venkovní obývák"],["ohniště / firepit","večerní sezení u ohně"],["venkovní bar",""],["houpací síť / houpačka",""]]},
+ {id:"q18",t:"Gril / venkovní vaření: jaké vybavení a zázemí je nezbytné?",m:true,o:[["plynový gril","rychlý, jednoduchý i pro hosty"],["gril na dřevěné uhlí / kamado","např. Big Green Egg"],["venkovní dřez + lednice","příprava a chlazení nápojů"],["pec na pizzu","na dřevo"],["pracovní deska a úložné prostory",""],["nic zvláštního",""]]},
+ {id:"q19",t:"Úložné prostory: co u vás doma vytváří nepořádek a co chcete úplně schovat?",m:true,o:[["zamykatelné úložné prostory majitelů","naše věci, když se vila pronajímá"],["technika a kabely","rack, router, audio"],["prádlo a úklid","zázemí pro personál"],["sportovní a vodní vybavení","šnorchly, rybářské věci, polštáře"],["boty a oblečení",""],["kuchyňské spotřebiče",""]]}
+]},
+{t:"Materiály, barvy a smysly",sub:"",q:[
+ {id:"q20",t:"Které přírodní materiály máš nejradši?",m:true,o:[["bambus","konstrukce, střecha, nábytek"],["černý bambus","tmavý kontrast"],["dřevo (teak apod.)","podlahy, nábytek, intarzie"],["kámen","lokální, lávový kámen, terazzo"],["mramor",""],["hliněné / vápenné omítky","tadelakt, hladké zemité stěny"],["ratan","pletený nábytek, stínidla"],["len a bavlna","textil"],["kov","černý kov, mosaz"],["keramika","ručně dělaná"]]},
+ {id:"q21",t:"Materiály nebo povrchy, které nechceš nebo jsou nepraktické?",m:true,o:[["lesklé povrchy","lesk, chrom, lesklé dlažby"],["umělé materiály","plast, lamino, imitace"],["studený kov a sklo","sterilní pocit"],["světlé citlivé látky","ve vlhku a s hosty rychle zničené"],["tmavé dřevo všude","těžké, tmavé"],["koberce","vlhko, údržba"]]},
+ {id:"q22",t:"Jaké barvy jsou ti nejbližší? Které určitě chceš, které ne?",m:true,o:[["zemité a pískové","béžová, terakota, okr"],["bílá a světlá","vzdušnost, světlo"],["zelená a modrá přírody","džungle, moře, bazén"],["tmavé akcenty","černý bambus, sopečný kámen"],["kontrast světlý × tmavý bambus",""],["terakota / rez","teplé tóny"],["pastelové tóny","jemné barvy"],["žádná výrazná barva","jen přírodní tóny"]]},
+ {id:"q23",t:"Povrchy spíš surové a řemeslné, hladké a jemné, nebo kontrolovaný mix?",m:false,o:[["surové a ručně dělané","textura, nedokonalost"],["hladké a jemné","čisté, upravené"],["kontrolovaný mix","hrubý kámen a bambus + hladký nábytek"]]},
+ {id:"q24",t:"Jak důležité jsou měkkost, akustika, vůně, hmatové látky a přirozené stárnutí (patina)?",m:true,o:[["měkkost","polštáře, koberce, textil"],["akustika","aby to v otevřeném prostoru nedunělo"],["vůně domu","podpisová vůně, kadidlo, dřevo"],["hmatové, příjemné látky","len, bavlna"],["patina je vítaná","materiály mohou krásně stárnout"],["patina spíš ne","má vypadat nově"]]}
+]},
+{t:"Světlo, komfort a technika",sub:"",q:[
+ {id:"q25",t:"Spíš teplé, atmosférické tlumené světlo, nebo jasné funkční? Kde je nutné silné pracovní světlo?",m:true,o:[["teplé a tlumené","svíčková nálada"],["jasné a funkční","dobře osvětlené všude"],["silné světlo: kuchyň",""],["silné světlo: koupelny","zrcadlo, líčení"],["silné světlo: pracovní místo",""],["silné světlo: šatník",""]]},
+ {id:"q26",t:"Kolik dekorativních svítidel chceš vidět oproti skrytému architektonickému osvětlení?",m:false,o:[["hlavně skryté + pár silných kusů","nepřímé světlo, několik výrazných svítidel"],["hlavně dekorativní svítidla","lampy a lustry jako součást designu"],["vyváženě půl na půl",""]]},
+ {id:"q27",t:"Požadavky na klimatizaci, ventilátory, chytrou domácnost, zabezpečení, audio, TV / projektor, nabíjení, Wi-Fi?",m:true,o:[["klimatizace ve všech ložnicích",""],["stropní ventilátory všude",""],["audio zóny (multiroom)","hudba zvlášť v každé části domu"],["chytré zámky","bez klíčů, kódy pro hosty"],["kamery jen venku",""],["TV / projektor v obýváku",""],["TV v ložnicích",""],["nabíjení u postele a sezení","USB, bezdrátové"],["silná Wi-Fi všude","i na terasách a v shale"]]},
+ {id:"q28",t:"Citlivost na spánek nebo komfort, která má ovlivnit zatemnění, zvuk, teplotu nebo světlo?",m:true,o:[["úplné zatemnění","blackout i u prosklených stěn"],["ticho","tichá klima, izolace od společných prostor"],["chladnější ložnice","klima + ventilátor nad postelí"],["žádné svítící kontrolky","tma bez standby světel"],["měkké noční světlo","cesta do koupelny"]]},
+ {id:"q29",t:"Praktická údržba v tropických podmínkách – co má prioritu?",m:true,o:[["odolnost proti vlhku a plísním","látky, matrace, větrané skříně"],["termiti a škůdci","ošetřený bambus a dřevo"],["snadný úklid pro personál","jednoduché povrchy"],["slanost a UV","blízko moře: kov, venkovní látky"],["snímatelné a pratelné potahy",""]]}
+]},
+{t:"Nábytek, umění a osobní předměty",sub:"",q:[
+ {id:"q30",t:"Stěhují se do Anahaty nějaké stávající kusy nábytku, umění, předměty nebo sbírky?",m:false,o:[["ne, vše nové","interiér od nuly"],["ano, něco máme","napiš co"],["možná pár drobností","upřesníme později"]]},
+ {id:"q31",t:"Nábytek spíš na míru, vybrané hotové kusy, vintage / starožitnosti, nebo mix?",m:false,o:[["hlavně na míru","lokální řemeslníci, bambus, teak"],["mix na míru + hotové","klíčové kusy na míru, zbytek vybraný"],["mix včetně vintage","přidat starožitnosti"],["hlavně hotové kusy","rychlejší, levnější"]]},
+ {id:"q32",t:"Co je nejdůležitější u sezení?",m:true,o:[["měkkost a hluboké lenošení","zabořit se, daybedy"],["vzpřímená opora","pohodlné i pro dlouhé sezení"],["vizuální lehkost","nepůsobí těžce, nepřekrývá výhledy"],["snadná údržba","snímatelné potahy"]]},
+ {id:"q33",t:"Kolik umění a dekorace ti sedí?",m:false,o:[["velmi zdrženlivě","architektura a příroda jsou uměním"],["vybrané silné kusy","několik výrazných děl, jinak klid"],["více vrstveně","víc obrazů, objektů, textilií"]]},
+ {id:"q34",t:"Osobní příběhy, symboly, cesty nebo kulturní odkazy, které se mají nenápadně promítnout do domu?",m:true,o:[["posvátná geometrie","zlatý řez, květ života, strom života"],["jméno ANAHATA / srdeční čakra","srdce, zelená, láska"],["lotos","už je v návrhu ložnice 4"],["balijská kultura a řemeslo","nenápadně, bez kýče"],["spojení s vesmírem, nohama na zemi",""],["naše cesty","místa, která máme rádi"],["Česko / domov","kousek odkud jsme"]]}
+]},
+{t:"Priority, investice a rozhodování",sub:"",q:[
+ {id:"q35",t:"Kdybychom měli vybrat tři oblasti, kam se vyplatí investovat víc – které?",m:true,o:[["společný obývací prostor","sezení, stůl, wow efekt při vstupu"],["ložnice a postele","matrace, povlečení, spánek"],["koupelny","sprchy, armatury, kámen"],["kuchyň","spotřebiče, deska"],["světlo a akustika","atmosféra a zvuk"],["venkovní prostory a bazén",""],["umění",""]]},
+ {id:"q36",t:"Kde je možné zjednodušit nebo ušetřit?",m:true,o:[["koupelny pro hosty","jednodušší armatury a obklady"],["dekorace a doplňky","dokupovat postupně"],["úložné a technické prostory","funkční, ne designové"],["venkovní nábytek","dobrý standard, ne na míru"],["hostovské ložnice",""],["technika",""]]},
+ {id:"q37",t:"Máš u některých kategorií cílový rozpočet nebo maximum?",m:false,o:[["zatím ne","rozhodneme po konceptu"],["ano","napiš částku"],["chceme varianty cen","víc úrovní vedle sebe"]]},
+ {id:"q38",t:"Když budete mít s Josefem jiný názor, jak má Lina postupovat?",m:false,o:[["připravit 2 varianty","rozhodneme nad vizualizací"],["doporučit, co je nejlepší","Lina jako arbitr"],["podle oblasti rozhoduje jeden",""],["hodíme si kostkou 🎲",""]]},
+ {id:"q39",t:"Schvalování: mají klíčová rozhodnutí schvalovat oba, nebo může některé oblasti vést jeden z vás?",m:false,o:[["oba všechno klíčové",""],["rozdělit oblasti","napiš jaké"],["hlavně Lucie","Josef jen u klíčových věcí"],["hlavně Josef","Lucie jen u klíčových věcí"]]},
+ {id:"q40",t:"Máš z něčeho obavu? A co by ti proces navrhování hodně zpříjemnil?",m:true,o:[["obava: rozpočet","aby neutekla cena"],["obava: návaznost na stavbu","aby interiér seděl s povolením a stavbou"],["obava: čas",""],["zpříjemní: 3D a vizualizace","vidět prostor před rozhodnutím"],["zpříjemní: vzorky materiálů","osahat na místě"],["zpříjemní: showroomy na Bali","návštěva dílen a obchodů"],["zpříjemní: krátké konzultace","rychlé online hovory"]]}
+]}];
+
+const ALL=S.flatMap(s=>s.q);
+let A={}, who="lucie", db=null, dbOK=false, saveT=null;
+const $=s=>document.querySelector(s);
+
+function render(){
+  const f=$("#form");
+  f.innerHTML=S.map((s,i)=>`<section><h2 class="sec"><b>0${i+1}</b>${s.t}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:""}
+  ${s.q.map(q=>`<div class="q" id="box-${q.id}"><h3>${q.t}</h3><p class="hint">${q.m?"Můžeš vybrat víc možností.":"Vyber jednu."}</p>
+   <div class="opts">${q.o.map((o,k)=>`<button class="chip" data-q="${q.id}" data-k="${k}"><span>${o[0]}</span>${o[1]?`<small>${o[1]}</small>`:""}</button>`).join("")}</div>
+   ${q.links?`<p class="links">Pro představu: ${q.links.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join(" · ")}</p>`:""}
+   <textarea id="t-${q.id}" data-q="${q.id}" placeholder="Jiná odpověď nebo poznámka…"></textarea></div>`).join("")}</section>`).join("");
+  f.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>toggle(b.dataset.q,+b.dataset.k)));
+  f.querySelectorAll("textarea").forEach(t=>t.addEventListener("input",()=>{A[t.dataset.q]=A[t.dataset.q]||{};A[t.dataset.q].text=t.value;changed()}));
+}
+function toggle(q,k){
+  const def=ALL.find(x=>x.id===q);A[q]=A[q]||{};let sel=A[q].sel||[];
+  if(def.m){sel=sel.includes(k)?sel.filter(x=>x!==k):[...sel,k]}else{sel=sel.includes(k)?[]:[k]}
+  A[q].sel=sel;paint(q);changed();
+}
+function paint(q){const sel=(A[q]&&A[q].sel)||[];document.querySelectorAll(`.chip[data-q="${q}"]`).forEach(b=>b.classList.toggle("on",sel.includes(+b.dataset.k)));const t=$("#t-"+q);if(t&&t.value!==((A[q]&&A[q].text)||""))t.value=(A[q]&&A[q].text)||""}
+function paintAll(){ALL.forEach(q=>paint(q.id));document.querySelectorAll("[data-who]").forEach(b=>b.classList.toggle("on",b.dataset.who===who));progress()}
+function answered(){return ALL.filter(q=>A[q.id]&&((A[q.id].sel&&A[q.id].sel.length)||(A[q.id].text&&A[q.id].text.trim()))).length}
+function progress(){const n=answered();$("#count").textContent=n+" / 40";$("#barfill").style.width=(n/40*100)+"%"}
+function changed(){progress();try{localStorage.setItem("anahata-"+who,JSON.stringify(A))}catch(e){}clearTimeout(saveT);saveT=setTimeout(()=>save(false),1200)}
+function exportText(){
+  const d=new Date();let out=`ANAHATA – dotazník k interiéru\nVyplňuje: ${who}  ·  ${d.toLocaleDateString("cs-CZ")}\n\n`;
+  S.forEach((s,i)=>{out+=`== 0${i+1} ${s.t} ==\n`;s.q.forEach(q=>{const a=A[q.id]||{};const sel=(a.sel||[]).map(k=>q.o[k][0]);if(!sel.length&&!(a.text||"").trim())return;out+=`${q.id.slice(1)}. ${q.t}\n`;if(sel.length)out+=`   • ${sel.join("; ")}\n`;if((a.text||"").trim())out+=`   ✎ ${a.text.trim()}\n`});out+="\n"});
+  return out;
+}
+async function save(final){
+  const st=$("#status");
+  if(!db){st.className="status";st.textContent="Rozpracováno – uloženo v tomhle zařízení.";return}
+  try{await db.doc("answers/"+who).set({who,answers:A,answeredCount:answered(),final:!!final,updatedAt:new Date().toISOString()});dbOK=true;st.className="status";st.textContent=final?"Odesláno. Díky! Můžeš se sem kdykoli vrátit a cokoli upravit.":"Uloženo "+new Date().toLocaleTimeString("cs-CZ",{hour:"2-digit",minute:"2-digit"})}
+  catch(e){db=null;save(final)}
+}
+async function load(){
+  try{const l=localStorage.getItem("anahata-"+who);if(l)A=JSON.parse(l)}catch(e){}
+  paintAll();
+  if(db){try{const s=await db.doc("answers/"+who).get();if(s.exists){const d=s.data();if(!answered()||(d.updatedAt&&d.updatedAt>(A._t||"")))A=d.answers||A}}catch(e){}paintAll();$("#status").className="status";$("#status").textContent="Odpovědi se ukládají automaticky."}
+  else{$("#status").className="status";$("#status").textContent="Rozpracované odpovědi zůstávají uložené v tomhle zařízení."}
+}
+render();paintAll();
+document.querySelectorAll("[data-who]").forEach(b=>b.addEventListener("click",()=>{who=b.dataset.who;A={};load()}));
+$("#done").addEventListener("click",async()=>{await save(true);const t=exportText();const box=$("#copybox");box.value=t;box.style.display="block";
+  try{await navigator.clipboard.writeText(t)}catch(e){}
+  const url="https://wa.me/420775667679?text="+encodeURIComponent(t);
+  let a=$("#walink");if(!a){a=document.createElement("a");a.id="walink";a.className="btn";a.target="_blank";a.rel="noopener";a.textContent="Otevřít WhatsApp a poslat";$("#done").after(a)}
+  a.href=url;$("#status").textContent="Text je připravený (a zkopírovaný). Klepni na „Otevřít WhatsApp a poslat“ – kdyby se zpráva neobjevila celá, vlož ji ze schránky.";a.focus()});
+$("#copy").addEventListener("click",async()=>{const t=exportText();const box=$("#copybox");box.value=t;box.style.display="block";try{await navigator.clipboard.writeText(t);$("#status").textContent="Zkopírováno do schránky – vlož to do WhatsAppu."}catch(e){box.focus();box.select();$("#status").textContent="Označ text níže a zkopíruj ho."}});
+(async()=>{try{db=window.claude&&claude.use?await claude.use("db"):null}catch(e){db=null}load()})();
+</script>
+
+</body>
+</html>
